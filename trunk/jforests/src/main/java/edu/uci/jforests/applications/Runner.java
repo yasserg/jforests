@@ -109,7 +109,6 @@ public class Runner {
 		if (options.has("output-model")) {
 			String outputModelFile = (String) options.valueOf("output-model");
 			File file = new File(outputModelFile);
-			file.getParentFile().mkdirs();
 			PrintStream ensembleOutput = new PrintStream(file);
 			ensembleOutput.println(ensemble);
 			ensembleOutput.close();
