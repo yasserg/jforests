@@ -94,8 +94,7 @@ public class BinaryFileReader {
 	private Feature readFeature(int featureSize, NumericArrayType type) throws Exception {
 		byte[] buf = new byte[featureSize];
 		read(buf, 0, featureSize);
-		Feature feature = new Feature();
-		feature.bins = NumericArrayFactory.createNumericArray(type, targets.length);
+		Feature feature = new Feature(NumericArrayFactory.createNumericArray(type, targets.length));
 		feature.loadFromByteArray(buf, 0);
 		return feature;
 	}
