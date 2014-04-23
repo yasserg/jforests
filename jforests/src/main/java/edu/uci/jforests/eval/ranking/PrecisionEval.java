@@ -19,7 +19,6 @@ package edu.uci.jforests.eval.ranking;
 
 import java.util.Arrays;
 
-import edu.uci.jforests.eval.EvaluationMetric;
 import edu.uci.jforests.sample.RankingSample;
 import edu.uci.jforests.sample.Sample;
 import edu.uci.jforests.util.ArraysUtil;
@@ -37,7 +36,7 @@ import edu.uci.jforests.util.concurrency.TaskItem;
  * @author Yasser Ganjisaffar <ganjisaffar at gmail dot com>
  */
 
-public class PrecisionEval extends EvaluationMetric {
+public class PrecisionEval extends RankingEvaluationMetric {
 
 	private TaskCollection<PrecisionWorker> mapWorkers;
 	private int maxLevels;
@@ -147,5 +146,17 @@ public class PrecisionEval extends EvaluationMetric {
 	@Override
 	public double measure(double[] predictions, Sample sample) throws Exception {
 		return getPrecisions(predictions, sample, TieBreaker.ReverseLabels)[0];
+	}
+
+	@Override
+	public SwapScorer getSwapScorer(double[] targets, int[] boundaries,
+			int trunc, int[][] labelCounts) throws Exception {
+		throw new UnsupportedOperationException("Precision not supported for LambdaMART yet!");
+	}
+
+	@Override
+	public double[] measureByQuery(double[] predictions, Sample sample)
+			throws Exception {
+		throw new UnsupportedOperationException("Precision not supported yet!");
 	}
 }

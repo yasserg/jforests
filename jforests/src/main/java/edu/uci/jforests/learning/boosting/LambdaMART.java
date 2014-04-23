@@ -22,6 +22,7 @@ import java.util.Arrays;
 import edu.uci.jforests.dataset.RankingDataset;
 import edu.uci.jforests.eval.EvaluationMetric;
 import edu.uci.jforests.eval.ranking.NDCGEval;
+import edu.uci.jforests.eval.ranking.RankingEvaluationMetric;
 import edu.uci.jforests.learning.trees.LeafInstances;
 import edu.uci.jforests.learning.trees.Tree;
 import edu.uci.jforests.learning.trees.TreeLeafInstances;
@@ -42,9 +43,10 @@ import edu.uci.jforests.util.concurrency.TaskItem;
 
 public class LambdaMART extends GradientBoosting {
 
+	
 	private TaskCollection<LambdaWorker> workers;
 
-	private double[] maxDCG;
+	private RankingEvaluationMetric.SwapScorer swapScorer;
 	private double sigmoidParam;
 	private double[] sigmoidCache;
 	private double minScore;
@@ -52,7 +54,7 @@ public class LambdaMART extends GradientBoosting {
 	private double sigmoidBinWidth;
 
 	protected double[] denomWeights;
-
+	
 	private int[] subLearnerSampleIndicesInTrainSet;
 
 	public LambdaMART() {
@@ -66,8 +68,12 @@ public class LambdaMART extends GradientBoosting {
 		LambdaMARTConfig lambdaMartConfig = configHolder.getConfig(LambdaMARTConfig.class);
 		GradientBoostingConfig gradientBoostingConfig = configHolder.getConfig(GradientBoostingConfig.class);
 		int[][] labelCountsPerQuery = NDCGEval.getLabelCountsForQueries(dataset.targets, dataset.queryBoundaries);
-		maxDCG = NDCGEval.getMaxDCGForAllQueriesAtTruncation(dataset.targets, dataset.queryBoundaries, lambdaMartConfig.maxDCGTruncation, labelCountsPerQuery);
+		
+		//instantiate the swap scorer. this measures the gradients for different swaps
+		swapScorer = ((RankingEvaluationMetric) evaluationMetric).getSwapScorer(dataset.targets, dataset.queryBoundaries, lambdaMartConfig.maxDCGTruncation, labelCountsPerQuery);
 
+		
+		
 		// Sigmoid parameter is set to be equal to the learning rate.
 		sigmoidParam = gradientBoostingConfig.learningRate;
 
@@ -120,6 +126,20 @@ public class LambdaMART extends GradientBoosting {
 	protected void preprocess() {
 		Arrays.fill(trainPredictions, 0, curTrainSet.size, 0);
 		Arrays.fill(validPredictions, 0, curValidSet.size, 0);
+		
+		//calculate the effectiveness of the natural ranking. this is needed for U_risk
+		
+		RankingEvaluationMetric rankingMetric = (RankingEvaluationMetric) ( (RankingEvaluationMetric) evaluationMetric).getParentMetric();
+		
+		double[] nDCG = null;
+		try {
+			nDCG = ((RankingSample) curTrainSet).evaluateByQuery(
+				RankingEvaluationMetric.computeNaturalOrderScores(curTrainSet.size, swapScorer.getQueryBoundaries()), 
+				rankingMetric);			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+		swapScorer.setCurrentIterationEvaluation(0, nDCG);
 	}
 
 	@Override
@@ -180,21 +200,34 @@ public class LambdaMART extends GradientBoosting {
 		return subLearnerSample;
 	}
 
+	@Override
 	protected void onIterationEnd() {
+		
+		RankingEvaluationMetric rankingMetric = (RankingEvaluationMetric) ( (RankingEvaluationMetric) evaluationMetric).getParentMetric();
+		
+		//inform the swap scorer of the new training measurement
+		double[] nDCG = null;
+		try {
+			nDCG = ((RankingSample) curTrainSet).evaluateByQuery(
+				trainPredictions, rankingMetric);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+		swapScorer.setCurrentIterationEvaluation(curIteration, nDCG);
+		
+		
 		super.onIterationEnd();
 	}
 
 	private class LambdaWorker extends TaskItem {
 
 		private int[] permutation;
-		private int[] labels;
 		private int beginIdx;
 		private int endIdx;
 		private ScoreBasedComparator comparator;
 
 		public LambdaWorker(int maxDocsPerQuery) {
 			permutation = new int[maxDocsPerQuery];
-			labels = new int[maxDocsPerQuery];
 			comparator = new ScoreBasedComparator();
 		}
 
@@ -210,7 +243,6 @@ public class LambdaMART extends GradientBoosting {
 			double rho;
 			double deltaWeight;
 			double pairWeight;
-			double queryMaxDcg;
 			RankingSample trainSet = (RankingSample) curTrainSet;
 			double[] targets = trainSet.targets;
 			comparator.scores = trainPredictions;
@@ -218,27 +250,28 @@ public class LambdaMART extends GradientBoosting {
 				for (int query = beginIdx; query < endIdx; query++) {
 					int begin = trainSet.queryBoundaries[query];
 					int numDocuments = trainSet.queryBoundaries[query + 1] - begin;
-					queryMaxDcg = maxDCG[trainSet.queryIndices[query]];
 
-					for (int i = 0; i < numDocuments; i++) {
-						labels[i] = (int) targets[begin + i];
-					}
-
+					//sort documents for this query by descending prediction (known as a permutation), recording previous position
 					comparator.offset = begin;
 					for (int d = 0; d < numDocuments; d++) {
 						permutation[d] = d;
 					}					
 					ArraysUtil.insertionSort(permutation, numDocuments, comparator);
-
+					//now permutations contains the offset of documents by rank
+					//i.e. permutations[0] is the offset of the FIRST(??) document in trainSet
+					
+					//for each document for this query
 					for (int i = 0; i < numDocuments; i++) {
 						int betterIdx = permutation[i];
-						if (labels[betterIdx] > 0) {
+						if (targets[begin+betterIdx] > 0) {
 							for (int j = 0; j < numDocuments; j++) {
 								if (i != j) {
 									int worseIdx = permutation[j];
-									if (labels[betterIdx] > labels[worseIdx]) {
+									//if i should have been ranked above j
+									if (targets[begin+betterIdx] > targets[begin+worseIdx]) {
 										scoreDiff = trainPredictions[begin + betterIdx] - trainPredictions[begin + worseIdx];
 
+										//calculate the original gradient (\lambda_{ij} according to Wang et al)
 										if (scoreDiff <= minScore) {
 											rho = sigmoidCache[0];
 										} else if (scoreDiff >= maxScore) {
@@ -247,9 +280,12 @@ public class LambdaMART extends GradientBoosting {
 											rho = sigmoidCache[(int) ((scoreDiff - minScore) / sigmoidBinWidth)];
 										}
 
-										pairWeight = (NDCGEval.GAINS[labels[betterIdx]] - NDCGEval.GAINS[labels[worseIdx]])
-												* Math.abs((NDCGEval.discounts[i] - NDCGEval.discounts[j])) / queryMaxDcg;
-
+										//what would |delta M_{ij}| have been?
+										pairWeight = Math.abs(
+												swapScorer.getDelta(trainSet.queryIndices[query], begin+betterIdx, i, begin+worseIdx, j)
+												);
+										//System.err.printf(this.toString() + " query=%d betterIdx=%d worseIdx=%d i=%d j=%d pairWeight=%f\n", query, betterIdx, worseIdx, i, j, pairWeight);
+										
 										residuals[begin + betterIdx] += rho * pairWeight;
 										residuals[begin + worseIdx] -= rho * pairWeight;
 

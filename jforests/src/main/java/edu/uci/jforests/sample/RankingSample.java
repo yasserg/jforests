@@ -26,6 +26,7 @@ import java.util.Random;
 
 import edu.uci.jforests.dataset.RankingDataset;
 import edu.uci.jforests.eval.ranking.NDCGEval;
+import edu.uci.jforests.eval.ranking.RankingEvaluationMetric;
 import edu.uci.jforests.util.ArraysUtil;
 import edu.uci.jforests.util.Constants;
 import edu.uci.jforests.util.FloatingPointUtil;
@@ -215,6 +216,11 @@ public class RankingSample extends Sample {
 		return new RankingSample((RankingDataset) dataset, queryIndices, queryBoundaries, indicesInDataset, weights, targets, indicesInParentSample, size,
 				numQueries);
 	}
+	
+	public double[] evaluateByQuery(double[] predictions, RankingEvaluationMetric evaluationMetric) throws Exception {
+		return evaluationMetric.measureByQuery(predictions, this);
+	}
+	
 
 	public RankingSample getZeroFilteredSample() {
 		int[] sampleIndicesInDataset = new int[size];
