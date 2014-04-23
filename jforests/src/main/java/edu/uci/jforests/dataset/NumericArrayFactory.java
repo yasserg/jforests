@@ -45,6 +45,8 @@ public class NumericArrayFactory {
 			return new ByteNumericArray(length);
 		case SHORT:
 			return new ShortNumericArray(length);
+		case INT:
+			return new IntNumericArray(length);
 		default:
 			throw new Exception(type + " is not implemented yet.");
 		}

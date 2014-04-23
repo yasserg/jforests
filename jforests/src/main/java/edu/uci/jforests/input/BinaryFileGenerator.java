@@ -27,6 +27,7 @@ import java.util.Map.Entry;
 
 import edu.uci.jforests.dataset.BitNumericArray;
 import edu.uci.jforests.dataset.ByteNumericArray;
+import edu.uci.jforests.dataset.IntNumericArray;
 import edu.uci.jforests.dataset.NullNumericArray;
 import edu.uci.jforests.dataset.ShortNumericArray;
 import edu.uci.jforests.dataset.Feature;
@@ -148,8 +149,10 @@ public class BinaryFileGenerator {
 				bins[i] = new ByteNumericArray(instanceCount);
 			} else if (numValues <= Short.MAX_VALUE) {
 				bins[i] = new ShortNumericArray(instanceCount);
+			} else if (numValues <= Integer.MAX_VALUE) {
+				bins[i] = new IntNumericArray(instanceCount);
 			} else {
-				throw new Exception("One of your features have more than " + Short.MAX_VALUE
+				throw new Exception("One of your features ("+i+") have more than " + Integer.MAX_VALUE
 						+ " distinct values. The support for this feature is not implemented yet.");
 			}
 			System.out.println("Feature: " + i + ", type: " + bins[i].getType().toString());
