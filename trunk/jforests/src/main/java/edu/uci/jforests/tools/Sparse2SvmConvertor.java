@@ -64,6 +64,7 @@ public class Sparse2SvmConvertor {
 				}
 			}
 		}
+		output.close();
 		reader.close();
 	}
 

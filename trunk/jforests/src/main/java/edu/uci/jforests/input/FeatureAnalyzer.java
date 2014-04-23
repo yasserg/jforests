@@ -204,6 +204,7 @@ public class FeatureAnalyzer {
 				fid2statistics.put(fid, stat);
 				fid2name.put(fid, name);
 			}
+			reader.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
