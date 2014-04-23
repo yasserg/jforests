@@ -86,7 +86,8 @@ public class GradientBoosting extends LearningModule {
 
 	protected void preprocess() {
 		Arrays.fill(trainPredictions, 0, curTrainSet.size, 0);
-		Arrays.fill(validPredictions, 0, curValidSet.size, 0);
+		if (curValidSet != null)
+			Arrays.fill(validPredictions, 0, curValidSet.size, 0);
 	}
 
 	@Override
