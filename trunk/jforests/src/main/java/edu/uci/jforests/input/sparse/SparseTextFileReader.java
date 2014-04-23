@@ -19,10 +19,14 @@ package edu.uci.jforests.input.sparse;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 
 /**
  * @author Yasser Ganjisaffar <ganjisaffar at gmail dot com>
@@ -30,12 +34,18 @@ import java.util.StringTokenizer;
 
 public class SparseTextFileReader {
 
+	final static Pattern SPLIT_COLON = Pattern.compile(":");
 	BufferedReader reader;
 
 	public void open(String filename) {
 		try {
-			reader = new BufferedReader(new FileReader(new File(filename)));
+			if (filename.endsWith(".gz"))
+				reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(filename))));
+			else
+				reader = new BufferedReader(new FileReader(new File(filename)));
 		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -59,7 +69,7 @@ public class SparseTextFileReader {
 					line.target = Integer.parseInt(st.nextToken());
 					line.numPairs = 0;
 					while (st.hasMoreTokens()) {
-						String[] parts = st.nextToken().split(":");
+						String[] parts = SPLIT_COLON.split(st.nextToken(), 2);
 						if (parts[0].equals("qid")) {
 							line.qid = parts[1];
 						} else {

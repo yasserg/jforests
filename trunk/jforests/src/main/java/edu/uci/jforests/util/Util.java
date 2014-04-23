@@ -169,6 +169,11 @@ public class Util {
 	
 	public static String getFileNameWithoutExtension(String name) {
 		int idx = name.lastIndexOf('.');
+		if (name.endsWith(".gz"))
+		{
+			return getFileNameWithoutExtension(name.substring(0, idx));
+		}
+		
 		if (idx < 0) {
 			return name;
 		}
@@ -182,6 +187,7 @@ public class Util {
 		while ((line = reader.readLine()) != null) {
 			result.add(Integer.parseInt(line.trim()));
 		}
+		reader.close();
 		return result;
 	}
 }

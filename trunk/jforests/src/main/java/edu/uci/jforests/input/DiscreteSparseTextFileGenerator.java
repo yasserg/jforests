@@ -17,9 +17,11 @@
 
 package edu.uci.jforests.input;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
-
+import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.zip.GZIPOutputStream;
 
 import edu.uci.jforests.input.sparse.SparseTextFileLine;
 import edu.uci.jforests.input.sparse.SparseTextFileReader;
@@ -51,7 +53,16 @@ public class DiscreteSparseTextFileGenerator {
 		reader.open(inputFilename);
 		int intValue;
 		try {
-			PrintStream output = new PrintStream(new File(outputFilename));
+			PrintStream output;
+			if (outputFilename.endsWith(".gz"))
+			{
+				output = new PrintStream(new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(new File(outputFilename)))));
+			}
+			else
+			{
+				//PrintStream buffers automatically if you give it a java.io.File
+				output = new PrintStream(new File(outputFilename));
+			}
 			int count = 0;
 			while (reader.loadNextLine(line)) {
 				if (line.meta) {
