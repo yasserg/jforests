@@ -161,9 +161,11 @@ public class Runner {
 			sample = new Sample(dataset);
 		}
 		in.close();
-
+		final long startms = System.currentTimeMillis();
 		double[] predictions = new double[sample.size];
 		LearningUtils.updateScores(sample, predictions, ensemble);
+		final long stopms = System.currentTimeMillis();
+		System.err.println(sample.size + " predictions in "+ (stopms - startms) + " ms");
 
 		PrintStream output;
 		if (options.has("output-file")) {
