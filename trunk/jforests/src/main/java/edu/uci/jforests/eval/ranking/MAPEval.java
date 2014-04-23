@@ -17,7 +17,6 @@
 
 package edu.uci.jforests.eval.ranking;
 
-import edu.uci.jforests.eval.EvaluationMetric;
 import edu.uci.jforests.sample.RankingSample;
 import edu.uci.jforests.sample.Sample;
 import edu.uci.jforests.util.ArraysUtil;
@@ -35,7 +34,7 @@ import edu.uci.jforests.util.concurrency.TaskItem;
  * @author Yasser Ganjisaffar <ganjisaffar at gmail dot com>
  */
 
-public class MAPEval extends EvaluationMetric {
+public class MAPEval extends RankingEvaluationMetric {
 
 	private TaskCollection<MAPWorker> mapWorkers;
 	private int maxDocsPerQuery;
@@ -112,7 +111,7 @@ public class MAPEval extends EvaluationMetric {
 		}
 	}
 
-	public double getMAP(double[] predictions, Sample sample, TieBreaker tieBreaker) throws Exception {
+	public double[] getMAP(double[] predictions, Sample sample, TieBreaker tieBreaker) throws Exception {
 		RankingSample rankingSample = (RankingSample) sample;
 
 		int chunkSize = 1 + (rankingSample.numQueries / mapWorkers.getSize());
@@ -128,17 +127,22 @@ public class MAPEval extends EvaluationMetric {
 		}
 		BlockingThreadPoolExecutor.getInstance().await();
 
-		double result = 0;
+		double[] result = new double[rankingSample.numQueries];
 		for (int i = 0; i < workerCount; i++) {
-			result += mapWorkers.getTask(i).getResult();			
-		}
-		result /= rankingSample.numQueries;
-		
+			result[i] = mapWorkers.getTask(i).getResult();			
+		}		
 		return result;
 	}
-	
+
 	@Override
-	public double measure(double[] predictions, Sample sample) throws Exception {
+	public double[] measureByQuery(double[] predictions, Sample sample)
+			throws Exception {
 		return getMAP(predictions, sample, TieBreaker.ReverseLabels);
+	}
+
+	@Override
+	public SwapScorer getSwapScorer(double[] targets, int[] boundaries,
+			int trunc, int[][] labelCounts) throws Exception {
+		throw new UnsupportedOperationException("MAP does not yet support SwapScoring for LambdaMART");
 	}
 }
