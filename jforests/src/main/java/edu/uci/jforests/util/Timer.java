@@ -33,7 +33,7 @@ public class Timer {
 		return end - start;
 	}
 	
-	public long getElapsedSeconds() {
-		return getElapsedMillis() / 1000;
+	public float getElapsedSeconds() {
+		return getElapsedMillis() / 1000f;
 	}
 }
