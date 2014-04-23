@@ -26,7 +26,7 @@ import edu.uci.jforests.util.Util;
 
 public class Feature implements ByteSerializable {
 
-	public NumericArray bins;
+	final public NumericArray bins;
 	public int[] upperBounds;
 
 	private String name;
@@ -35,6 +35,11 @@ public class Feature implements ByteSerializable {
 	private double factor;
 	private boolean onLogScale;
 
+	public Feature(NumericArray _bins)
+	{
+		this.bins = _bins;
+	}
+	
 	public NumericArrayType getType() {
 		return bins.getType();
 	}
@@ -101,8 +106,7 @@ public class Feature implements ByteSerializable {
 	}
 
 	public Feature getSubSampleFeature(int[] indices) {
-		Feature subSampleFeature = new Feature();
-		subSampleFeature.bins = bins.getSubSampleNumericArray(indices);
+		Feature subSampleFeature = new Feature(bins.getSubSampleNumericArray(indices));
 		subSampleFeature.upperBounds = upperBounds;
 		subSampleFeature.name = name;
 		subSampleFeature.min = min;
