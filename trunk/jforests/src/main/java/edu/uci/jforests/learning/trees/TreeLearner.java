@@ -75,6 +75,7 @@ public abstract class TreeLearner extends LearningModule {
 		TreesConfig treesConfig = configHolder.getConfig(TreesConfig.class);
 
 		minInstancePercentagePerLeaf = treesConfig.minInstancePercentagePerLeaf;
+		minInstancesPerLeaf = treesConfig.minInstancePerLeaf;
 		maxLeaves = treesConfig.numLeaves;
 
 		perLeafBestSplit = new TreeSplit[treesConfig.numLeaves];
@@ -82,7 +83,7 @@ public abstract class TreeLearner extends LearningModule {
 		leafCandidateSplitsCalculationTask = new TaskCollection<BestThresholdForFeatureFinder>();
 		int chunkSize = 1 + (dataset.numFeatures / BlockingThreadPoolExecutor.getInstance().getMaximumPoolSize());
 		int offset = 0;
-		for (int i = 0; offset < dataset.numFeatures; i++) {
+		while (offset < dataset.numFeatures) {
 			int endOffset = offset + Math.min(dataset.numFeatures - offset, chunkSize);
 			leafCandidateSplitsCalculationTask.addTask(new BestThresholdForFeatureFinder(offset, endOffset));
 			offset += chunkSize;
@@ -143,7 +144,11 @@ public abstract class TreeLearner extends LearningModule {
 	public Ensemble learn(Sample trainSet, Sample validSet) throws Exception {
 		curTrainSet = trainSet;
 		trainTreeLeafInstances.init(curTrainSet.size);
-		minInstancesPerLeaf = (int) (curTrainSet.size * minInstancePercentagePerLeaf / 100.0);
+		//only use minInstancePercentagePerLeaf is minInstancesPerLeaf is set to -1
+		if (minInstancesPerLeaf == -1)
+		{
+			minInstancesPerLeaf = (int) (curTrainSet.size * minInstancePercentagePerLeaf / 100.0);
+		}
 		for (int i = 0; i < selectedFeatures.length; i++) {
 			selectedFeatures[i] = !featuresToDiscard[i];
 		}

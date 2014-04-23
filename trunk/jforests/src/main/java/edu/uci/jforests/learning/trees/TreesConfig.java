@@ -33,6 +33,9 @@ public class TreesConfig extends ComponentConfig {
 	
 	public double minInstancePercentagePerLeaf = 0.25;
 	private final static String MIN_INSTANCE_PERCENTAGE_PER_LEAF = "trees.min-instance-percentage-per-leaf";
+
+	public int minInstancePerLeaf = -1;
+	private final static String MIN_INSTANCE_PER_LEAF = "trees.min-instance-per-leaf";
 	
 	public double featureSamplingPerSplit = 1.0;
 	private final static String SPLIT_SAMPLING = "trees.feature-sampling";
@@ -68,6 +71,8 @@ public class TreesConfig extends ComponentConfig {
 				numLeaves = Integer.parseInt(value);
 			} else if (key.equals(MIN_INSTANCE_PERCENTAGE_PER_LEAF)) {
 				minInstancePercentagePerLeaf = Double.parseDouble(value);
+			} else if (key.equals(MIN_INSTANCE_PER_LEAF)) {
+				minInstancePerLeaf = Integer.parseInt(value);
 			} else if (key.equals(FEATURES_TO_DISCARD)) {
 				featuresToDiscard = value;
 			} else if (key.equals(FEATURES_TO_INCLUDE)) {
@@ -81,6 +86,7 @@ public class TreesConfig extends ComponentConfig {
 		StringBuilder sb = new StringBuilder();
 		sb.append(NUM_LEAVES + ": " + numLeaves + "\n");
 		sb.append(MIN_INSTANCE_PERCENTAGE_PER_LEAF + ": " + minInstancePercentagePerLeaf + "\n");
+		sb.append(MIN_INSTANCE_PER_LEAF + ": " + minInstancePerLeaf + "\n");
 		sb.append(SPLIT_SAMPLING + ": " + featureSamplingPerSplit + "\n");
 		sb.append(RANDOMIZED_SPLITS + ": " + randomizedSplits + "\n");
 		sb.append(FEATURES_TO_DISCARD + ": " + featuresToDiscard);
