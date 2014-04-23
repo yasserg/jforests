@@ -82,6 +82,11 @@ public class NDCGEval extends EvaluationMetric {
 			int begin = boundaries[q];
 			int end = boundaries[q + 1];
 			for (int i = begin; i < end; i++) {
+				if ((int) labels[i] >= GAIN_LEVELS)
+				{
+					System.err.println("query " + q + " line "+i+" label " + ((int) labels[i]));
+					labels[i] = GAIN_LEVELS-1; 
+				}
 				labelCounts[q][(int) labels[i]]++;
 			}
 		}
