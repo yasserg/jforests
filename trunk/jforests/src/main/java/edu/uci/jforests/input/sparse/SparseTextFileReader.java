@@ -52,13 +52,18 @@ public class SparseTextFileReader {
 
 	public boolean loadNextLine(SparseTextFileLine line) {
 		try {
-			String str = reader.readLine();
-			if (str != null) {
+			while(true)
+			{
+				String str = reader.readLine();
+				if (str == null)
+					return false;
 				str = str.trim();
 				int commentIdx = str.indexOf('#');
 				if (commentIdx >= 0) {
 					str = str.substring(0, commentIdx).trim();
 				}
+				if (str.length() == 0)
+					continue;
 				if (str.startsWith("@")) {
 					line.meta = true;
 					line.content = str;
