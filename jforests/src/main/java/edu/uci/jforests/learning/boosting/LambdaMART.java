@@ -125,7 +125,8 @@ public class LambdaMART extends GradientBoosting {
 	@Override
 	protected void preprocess() {
 		Arrays.fill(trainPredictions, 0, curTrainSet.size, 0);
-		Arrays.fill(validPredictions, 0, curValidSet.size, 0);
+		if (curValidSet != null)
+			Arrays.fill(validPredictions, 0, curValidSet.size, 0);
 		
 		//calculate the effectiveness of the natural ranking. this is needed for U_risk
 		
