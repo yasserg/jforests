@@ -190,8 +190,7 @@ public class BinaryFileGenerator {
 		timer.start();
 		features = new Feature[featureCount];
 		for (int f = 0; f < featureCount; f++) {
-			features[f] = new Feature();
-			features[f].bins = bins[f];
+			features[f] = new Feature(bins[f]);
 			features[f].upperBounds = valueDistributions[f];
 			features[f].setName(featureAnalyzer.getFeatureName(f + 1));
 			features[f].setMin(featureAnalyzer.min[f]);
