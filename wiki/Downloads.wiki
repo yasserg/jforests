@@ -1,13 +1,11 @@
-#summary One-sentence summary of this page.
+#summary Downloads of JForests
 
 = Introduction =
 
-Add your content here.
+*Current version*
+ * Version 0.4, released 18th June 2014: https://jforests.googlecode.com/svn/trunk/releases/jforests-0.4.jar
 
-
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+*Older versions*
+ * Version 0.3, released November 2011: https://jforests.googlecode.com/svn/trunk/releases/jforests-0.3.jar
+ * Version 0.2 released November 2011: https://jforests.googlecode.com/svn/trunk/releases/jforests-0.2.jar
+ * Version 0.0.1 released September 2011: https://jforests.googlecode.com/svn/trunk/releases/jforests-0.0.1.jar
