@@ -34,4 +34,5 @@ learning.evaluation-metric=TRiskAwareFAROEval:1:NDCG
 
 = References = 
 [1] L Wang, P N Bennett, and K Collins-Thompson. Robust ranking models via risk-sensitive optimization. In Proceedings of SIGIR 2012. http://doi.acm.org/10.1145/2348283.2348385
+
 [2] B.T Dincer, C Macdonald, I Ounis. Hypothesis Testing for Risk-Sensitive Evaluation of Retrieval Systems. In Proceedings of SIGIR 2014.
