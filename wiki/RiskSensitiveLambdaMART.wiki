@@ -6,7 +6,7 @@ The aim of risk-sensitive retrieval is to reduce the _risk_ that the system coul
 
 Wang et al. (1) proposed that LambdaMART could be adapted to be more robust, or risk-sensitive, by adaptation of the loss-function. In particular, their URisk measure, which weights decreases in effectiveness (e.g. in terms of NDCG) more strongly than gains can be integrated into LambdaMART. The alpha >0 parameter defines how must emphasis down-side risk (losses compared to the baseline) obtain compared to relative gains.
 
-Dincer et al (2) proposed new _adaptive_ risk-sensitive measures for LambdaMART based on the t-test statistic, namely SARO & FARO: Semi-Adaptive Risk-sensitive Optimisation (SARO) weights more strongly the alpha value for topics which exhibit significant downside risk. On the other hand, for Fully-Adaptive Risk-sensitive Optimisation (FARO), the alpha value for topics is varied according to the amount of risk observed for the topic.
+Dincer et al (2) proposed new _adaptive_ risk-sensitive measures for LambdaMART based on the t-test statistic, namely SARO & FARO: Semi-Adaptive Risk-sensitive Optimisation (SARO) weights more strongly the alpha value for topics which exhibit significant downside risk. On the other hand, for Fully-Adaptive Risk-sensitive Optimisation (FARO), the alpha value for topics is varied according to the amount of risk (down-side or up-side) observed for the topic.
 
 As of version 0.5, Jforests supports URisk, SARO & FARO.
 
