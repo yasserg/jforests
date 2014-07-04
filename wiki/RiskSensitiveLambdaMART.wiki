@@ -14,7 +14,7 @@ As of version 0.5, Jforests supports URisk, SARO & FARO.
 
 *NB:* Citation: If you use the risk-sensitive evaluation in Jforests, please cite (2): B.T Dincer, C Macdonald, I Ounis. Hypothesis Testing for Risk-Sensitive Evaluation of Retrieval Systems. In Proceedings of SIGIR 2014.
 
-To deploy URisk with alpha=1, alter your ranking.properties as follows:
+To deploy URisk with alpha=1, based on the NDCG evaluation measure, the ranking.properties should be altered as follows:
 {{{
 #learning.evaluation-metric=NDCG
 learning.evaluation-metric=URiskAwareEval:1:NDCG
