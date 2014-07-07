@@ -27,7 +27,11 @@ import edu.uci.jforests.dataset.Dataset;
 import edu.uci.jforests.dataset.RankingDataset;
 import edu.uci.jforests.dataset.RankingDatasetLoader;
 import edu.uci.jforests.eval.EvaluationMetric;
+import edu.uci.jforests.eval.ranking.MAPEval;
 import edu.uci.jforests.eval.ranking.NDCGEval;
+import edu.uci.jforests.eval.ranking.TRiskAwareFAROEval;
+import edu.uci.jforests.eval.ranking.TRiskAwareSAROEval;
+import edu.uci.jforests.eval.ranking.URiskAwareEval;
 import edu.uci.jforests.learning.LearningModule;
 import edu.uci.jforests.learning.boosting.LambdaMART;
 import edu.uci.jforests.sample.RankingSample;
@@ -108,16 +112,42 @@ public class RankingApp extends ClassificationApp {
 			learner.init(configHolder, (RankingDataset) trainDataset, maxTrainInstances, (validDataset != null ? validDataset.numInstances
 					: trainDataset.numInstances), evaluationMetric);
 			return learner;
-		} else {
+		}
+		else {
 			return super.getLearningModule(name);
 		}
 	}
 
 	@Override
 	protected EvaluationMetric getEvaluationMetric(String name) throws Exception {
+		if (name.startsWith("URiskAwareEval:"))
+		{
+			final String[] parts = name.split(":");
+			final double ALPHA = Double.parseDouble(parts[1]);
+			final String parentMeasure = parts[2];
+			return new URiskAwareEval(this.getEvaluationMetric(parentMeasure), ALPHA);			
+		}
+		if (name.startsWith("TRiskAwareEvalSARO:") || name.startsWith("TRiskAwareSAROEval:"))
+		{
+			final String[] parts = name.split(":");
+			final double ALPHA = Double.parseDouble(parts[1]);
+			final String parentMeasure = parts[2];
+			return new TRiskAwareSAROEval(this.getEvaluationMetric(parentMeasure), ALPHA);			
+		}
+		if (name.startsWith("TRiskAwareEvalFARO:")|| name.startsWith("TRiskAwareFAROEval:"))
+		{
+			final String[] parts = name.split(":");
+			final double ALPHA = Double.parseDouble(parts[1]);
+			final String parentMeasure = parts[2];
+			return new TRiskAwareFAROEval(this.getEvaluationMetric(parentMeasure), ALPHA);			
+		}
 		if (name.equals("NDCG")) {
 			return new NDCGEval(maxDocsPerQuery, ((RankingTrainingConfig) trainingConfig).validNDCGTruncation);
 		}
+		if (name.equals("MAP")) {
+			return new MAPEval(maxDocsPerQuery);
+		}
+		
 		return super.getEvaluationMetric(name);
 	}
 
