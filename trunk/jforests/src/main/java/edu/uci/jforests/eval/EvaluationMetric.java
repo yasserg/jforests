@@ -31,6 +31,10 @@ public abstract class EvaluationMetric {
 		this.isLargerBetter = isLargerBetter;
 	}
 	
+	public boolean largerIsBetter() {
+		return isLargerBetter;
+	}
+	
 	public abstract double measure(double[] predictions, Sample sample) throws Exception;
 	
 	public boolean isFirstBetter(double first, double second, double tolerance) {
