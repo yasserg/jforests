@@ -1,6 +1,8 @@
 jforests is a Java library that implements many tree-based learning algorithms.
 
-jforests can be used for regression, classification and ranking problems. The following tutorial shows how jforests can be used for learning a ranking model using the LambdaMART algorithm.
+jforests can be used for regression, classification and ranking problems. The latest release can be downloaded from  https://github.com/yasserg/jforests
+
+The following tutorial shows how jforests can be used for learning a ranking model using the LambdaMART algorithm.
 
 #Learning to Rank with LambdaMART
 
