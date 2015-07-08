@@ -1,6 +1,6 @@
 jforests is a Java library that implements many tree-based learning algorithms.
 
-jforests can be used for regression, classification and ranking problems. The latest release can be downloaded from  https://github.com/yasserg/jforests
+jforests can be used for regression, classification and ranking problems. The latest release can be downloaded from  https://github.com/yasserg/jforests/releases
 
 The following tutorial shows how jforests can be used for learning a ranking model using the LambdaMART algorithm.
 
@@ -17,15 +17,15 @@ jforests uses the following format for its input data sets (same as the one used
 <value> .=. <float>
 ```
 
-For this tutorial, we will use the sample data set which is available [http://jforests.googlecode.com/svn/trunk/jforests/src/main/resources/sample-ranking-data.zip here].
+For this tutorial, we will use the sample data set which is available <a href="https://github.com/yasserg/jforests/blob/master/jforests/src/main/resources/sample-ranking-data.zip">here</a>.
 
 
 ##Converting Data Sets to Binary Format
-In order to speed up the computations, jforests converts its input data sets to binary format. We are assuming that you have unzipped the above sample data set in a folder and are currently on that folder. You should have also [http://code.google.com/p/jforests/downloads/list downloaded] the latest jforests jar file and renamed it to 'jforests.jar' and put it in the same folder.
+In order to speed up the computations, jforests converts its input data sets to binary format. We are assuming that you have unzipped the above sample data set in a folder and are currently on that folder. You should have also <a href="https://github.com/yasserg/jforests/releases">downloaded</a> the latest jforests jar file and renamed it to 'jforests.jar' and put it in the same folder.
 
 The following command can be used for converting data sets to binary format:
 
-`java -jar jforests.jar --cmd=generate-bin --ranking --folder . --file train.txt --file valid.txt --file test.txt`
+	java -jar jforests.jar --cmd=generate-bin --ranking --folder . --file train.txt --file valid.txt --file test.txt
 
 As this command shows, we are converting 'train.txt', 'valid.txt', and 'test.txt' to binary format. As a result 'train.bin', 'valid.bin', and 'test.bin' are generated.
 
@@ -52,12 +52,12 @@ Create a 'ranking.properties' file in the current folder and save the above conf
 
 Then the following command can be used for training a LambdaMART ensemble and storing it in the 'ensemble.txt' file:
 
-`java -jar jforests.jar --cmd=train --ranking --config-file ranking.properties --train-file train.bin --validation-file valid.bin --output-model ensemble.txt`
+	java -jar jforests.jar --cmd=train --ranking --config-file ranking.properties --train-file train.bin --validation-file valid.bin --output-model ensemble.txt
 
 ##Predicting Scores of Documents
 Once you have the LambdaMART ensemble, you can use it for predicting scores of test documents. The following command performs this step and stores the results in the 'predcitions.txt' file.
 
-`java -jar jforests.jar --cmd=predict --ranking --model-file ensemble.txt --tree-type RegressionTree --test-file test.bin --output-file predictions.txt`
+	java -jar jforests.jar --cmd=predict --ranking --model-file ensemble.txt --tree-type RegressionTree --test-file test.bin --output-file predictions.txt
 
 Scores can then be used for measuring NDCG or other information retrieval measures.
 
@@ -90,7 +90,8 @@ Bibtex:
 	publisher = {ACM},
 	address = {New York, NY, USA},
 }
+```
 
 If you use risk-sensitive learning to rank, please see <a href="RiskSensitiveLambdaMART.md">RiskSensitiveLambdaMART</a> for citation information.
 
-```
+
