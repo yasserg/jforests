@@ -94,4 +94,10 @@ Bibtex:
 
 If you use risk-sensitive learning to rank, please see <a href="RiskSensitiveLambdaMART.md">RiskSensitiveLambdaMART</a> for citation information.
 
+## License
+
+Copyright (c) 2011-2015 Yasser Ganjisaffar
+
+Published under [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
 
