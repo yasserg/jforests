@@ -1,5 +1,5 @@
-#RiskSensitiveLambdaMART.md
-##Introduction
+# RiskSensitiveLambdaMART.md
+## Introduction
 
 The aim of risk-sensitive retrieval is to reduce the _risk_ that the system could perform worse than a baseline (e.g. BM25) for a given query. 
 
@@ -9,29 +9,29 @@ Dincer et al (2) proposed new _adaptive_ risk-sensitive measures for LambdaMART 
 
 As of version 0.5, Jforests supports URisk, SARO & FARO.
 
-#Usage
+# Usage
 
 *NB:* Citation: If you use the risk-sensitive evaluation in Jforests, please cite (2): B.T Dincer, C Macdonald, I Ounis. Hypothesis Testing for Risk-Sensitive Evaluation of Retrieval Systems. In Proceedings of SIGIR 2014.
 
 To deploy URisk with alpha=1, based on the NDCG evaluation measure, the ranking.properties should be altered as follows:
-```
+```properties
 #learning.evaluation-metric=NDCG
 learning.evaluation-metric=URiskAwareEval:1:NDCG
 ```
 
 To deploy SARO:
-```
+```properties
 #learning.evaluation-metric=NDCG
 learning.evaluation-metric=TRiskAwareSAROEval:1:NDCG
 ```
 
 To deploy FARO:
-```
+```properties
 #learning.evaluation-metric=NDCG
 learning.evaluation-metric=TRiskAwareFAROEval:1:NDCG
 ```
 
-#References
+# References
 (1) L Wang, P N Bennett, and K Collins-Thompson. Robust ranking models via risk-sensitive optimization. In Proceedings of SIGIR 2012. http://doi.acm.org/10.1145/2348283.2348385
 
 (2) B T Dincer, C Macdonald, I Ounis. Hypothesis Testing for Risk-Sensitive Evaluation of Retrieval Systems. In Proceedings of SIGIR 2014.
